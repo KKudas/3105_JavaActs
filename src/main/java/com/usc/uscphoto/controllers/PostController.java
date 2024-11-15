@@ -74,4 +74,21 @@ public class PostController {
         }
         return postLike;
     }
+
+    @DeleteMapping("/{postId}")
+    public String deletePostById(@PathVariable int postId) {
+        Optional<Post> postToDelete = posts.stream().filter(p -> p.getId() == postId).findFirst();
+
+        if (postToDelete.isPresent()) {
+            posts.remove(postToDelete.get());
+
+            // Optionally, remove related comments and likes if needed.
+            comments.removeIf(comment -> comment.getPostId() == postId);
+            likes.removeIf(like -> like.getPostId() == postId);
+
+            return "Post deleted successfully";
+        } else {
+            throw new IllegalArgumentException("Post not found");
+        }
+    }
 }
